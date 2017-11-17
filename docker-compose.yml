@@ -1,0 +1,36 @@
+version: '3'
+services:
+
+  db:
+    build: ./postgres
+    environment:
+      POSTGRES_USER: lumen
+      POSTGRES_PASSWORD: secret
+    networks:
+      - appnet
+
+  web:
+    depends_on:
+      - app
+    image: nginx:alpine
+    networks:
+      - appnet
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx:/etc/nginx
+      - ./lumen:/lumen
+
+  app:
+    depends_on:
+      - db
+    build: ./php
+    networks:
+      - appnet
+    volumes:
+      - ./php/php-fpm.conf:/usr/local/etc/php-fpm.conf
+      - ./lumen:/lumen
+
+networks:
+  appnet:
+    driver: "bridge"
