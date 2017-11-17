@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Remove all the unused `use` statements from the code
+
+source "$( cd "$( dirname "$0" )" && pwd )/common" || exit 1
+go_to_laravel_dir
+
+
+if [ $# -eq 0 ]; then
+    exit_error "You must pass the a forlder or file as a parameter"
+fi
+
+./vendor/bin/php-cs-fixer fix "$1" --fixers=unused_use

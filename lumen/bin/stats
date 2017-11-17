@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# get stats about the code
+
+source "$( cd "$( dirname "$0" )" && pwd )/common" || exit 1
+go_to_laravel_dir
+
+command -v cloc >/dev/null 2>&1 || exit_error "'cloc' program not found. Install it from https://github.com/AlDanial/cloc"
+
+echo
+color "Code stats (lines)" purple
+cloc app bin database resources tests resources
+
+echo
+color "Code stats (percentage)" purple
+cloc app bin database resources tests resources --by-percent c

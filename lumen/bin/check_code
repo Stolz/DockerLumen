@@ -1,0 +1,187 @@
+#!/bin/bash
+
+# Check code for quality assurance using:
+# - PHP's Native Linter
+# - PHP_CodeSniffer https://github.com/squizlabs/PHP_CodeSniffer
+
+phpcs="./vendor/bin/phpcs . \
+--standard=PSR2 \
+--ignore=doc,node_modules,public/bower,resources/assets/css,vendor \
+--report-width=100 --tab-width=4 \
+--runtime-set testVersion 7.0 -s "
+
+source "$( cd "$( dirname "$0" )" && pwd )/common" || exit 1
+go_to_laravel_dir
+
+# Show script help #############################################################
+
+function usage
+{
+	color "Usage:" "yellow"
+	echo
+	color "    $0 -l | -S | -s [sniffs] | -i [sniffs]" "cyan"
+	echo
+	color "where:" "yellow"
+	echo
+	color "    -l Run PHP linter (Search for syntax errors)" "cyan"
+	color "    -S Run PHP Stan (Search for bugs)" "cyan"
+	color "    -s Run PHP Code Sniffer (Search for coding standard violations)" "cyan"
+	color "    -i Run PHP Code Sniffer in interactive mode (file by file)" "cyan"
+	color "    -m Run PHP Mess Detector" "cyan"
+	color "    -h Show this help menu" "cyan"
+	echo
+	color "and:" "yellow"
+	echo
+	color "    [sniffs] A comma separated lists of sniffs to filter by" "cyan"
+}
+
+# Run PHP Linter ###############################################################
+
+function linter
+{
+	color "Running PHP lint" cyan
+	find . -type f -iname "*.php" -not -path "./vendor/*" -print0 | while IFS= read -r -d $'\0' file; do
+		php -lf $file > /dev/null
+		[[ $? -eq 0 ]] || exit_error "`pwd`/$file needs to be fixed to continue"
+	done
+	color OK
+	exit 0
+}
+
+# Run PHP Stan #################################################################
+
+function stan
+{
+	color "Running PHP Stan" cyan
+	./vendor/bin/phpstan analyse app config database resources routes
+	exit $?
+}
+
+# Check PHP_CodeSniffer is installed ###########################################
+
+function check_sniffer_is_installed
+{
+
+	if [[ ! -x ./vendor/bin/phpcs ]]; then
+		color "PHP_CodeSniffer script not found" "red"
+		echo
+		color "Install it with composer:" "yellow"
+		echo
+		color "    composer require squizlabs/php_codesniffer:~2 --dev" "yellow"
+		exit 1
+	fi
+}
+
+# Run PHP_CodeSniffer inteactive mode ##########################################
+
+function isniffer
+{
+	check_sniffer_is_installed
+
+	[[ -z $1 ]] && sniffs="" || sniffs="--sniffs=$1"
+
+	color "Running PHP_CodeSniffer in interactive mode" cyan
+	$phpcs -a $sniffs
+	color OK
+	exit 0
+}
+
+# Run PHP_CodeSniffer ##########################################################
+
+function sniffer
+{
+	check_sniffer_is_installed
+
+	[[ -z $1 ]] && sniffs="" || sniffs="--sniffs=$1"
+
+	color "Running PHP_CodeSniffer" cyan
+	$phpcs -p --report-source $sniffs
+
+	if [[ $? -ne 0 ]]; then
+		color "Standard coding violations found" red
+		color "Press ENTER to run sniffer in interactive mode or CONTROL+C to cancel" yellow
+		color "Provide a comma separated list of rules (sniffs) if you want to limit results" yellow
+		read newsniffs
+
+		# If no new sniffs provided use original ones
+		[[ -z $newsniffs ]] && sniffs="$1" || sniffs="$newsniffs"
+
+		isniffer $sniffs
+	else
+		color OK
+		exit 0
+	fi
+}
+
+# Check if PHP Mess Detector is installed ######################################
+
+function check_messdetector_is_installed
+{
+
+	if [[ ! -x ./vendor/bin/phpmd ]]; then
+		color "PHP Mess Detector script not found" "red"
+		echo
+		color "Install it with composer:" "yellow"
+		echo
+		color "    composer require phpmd/phpmd --dev" "yellow"
+		exit 1
+	fi
+}
+
+# Run PHP Mess Detector ########################################################
+
+function detectmess
+{
+	check_messdetector_is_installed
+	#If no ruleset is provide usa all
+	rulesets="${1:-cleancode,codesize,controversial,design,naming,unusedcode}"
+	color "Running PHP Mess Detector with rulesets: $rulesets" cyan
+	./vendor/bin/phpmd app,config,database,tests text $rulesets -suffixes .php
+	exit $?
+}
+
+# Show wrong parameters message ################################################
+
+function wrong_parameters
+{
+	color "Wrong parameters" "red"
+	usage
+	exit 1;
+}
+
+# Read command line parameters #################################################
+
+while getopts "lSsimh" opt; do
+case $opt in
+	l)
+	linter
+	;;
+
+	S)
+	stan
+	;;
+
+	s)
+	sniffer $2
+	;;
+
+	i)
+	isniffer $2
+	;;
+
+	m)
+	detectmess $2
+	;;
+
+	h)
+	usage
+	exit 0
+	;;
+
+	\?)
+	wrong_parameters
+	;;
+esac
+done
+
+[[ $OPTIND -eq 0 ]] || wrong_parameters

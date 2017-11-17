@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Search code for pending tasks
+
+source "$( cd "$( dirname "$0" )" && pwd )/common" || exit 1
+
+go_to_laravel_dir
+
+color "Pending tasks"
+
+grep -r --colour=auto \
+--exclude-dir={.git,node_modules,public,storage,vendor} \
+--exclude-from=.gitignore  \
+--exclude="`basename $0`"  \
+"TODO" .
+
+exit $?

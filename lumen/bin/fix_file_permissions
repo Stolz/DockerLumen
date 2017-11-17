@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Set the proper file and directory permissions
+
+# Default user and group if none is provided as argument
+USER=${1:-$USER}
+GROUP=${2:-nginx}
+
+source "$( cd "$( dirname "$0" )" && pwd )/common" || exit 1
+
+go_to_laravel_dir
+
+color "Changing permissions for `pwd`"
+color "Owner will be set to $USER:$GROUP. Use $0 [user] [group] to customize this" "yellow"
+
+# Wrapper command
+if [[ $EUID -ne 0 && -x /usr/bin/sudo ]]; then
+	SUDO='sudo'
+else
+	SUDO=''
+fi
+
+# Owner
+$SUDO chown -R $USER:$GROUP .
+
+# Default safe permissions
+$SUDO find . -type d -exec chmod 775 {} \;
+$SUDO find . -type f -exec chmod 664 {} \;
+
+# Exec permission for scripts
+$SUDO chmod 755 artisan bin/* vendor/bin/* node_modules/.bin/*
+
+# Writte permissions for certain directories
+$SUDO chmod 777 storage/* storage/framework/*
+
+exit 0
