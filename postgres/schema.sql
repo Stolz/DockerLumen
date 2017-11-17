@@ -15,3 +15,7 @@ insert into "migrations" (id, migration, batch) values (2, '0000_00_00_000002_cr
 
 create table "failed_jobs" ("id" bigserial primary key not null, "connection" text not null, "queue" text not null, "payload" text not null, "exception" text not null, "failed_at" timestamp(0) without time zone default CURRENT_TIMESTAMP(0) not null);
 insert into "migrations" (id, migration, batch) values (3, '0000_00_00_000003_create_failed_jobs_table', 1);
+
+create table "routes" ("token" varchar(255) not null, "status" varchar(255) not null, "path" text not null, "total_distance" integer null, "total_time" integer null, "error" text null);
+alter table "routes" add primary key ("token");
+insert into "migrations" (id, migration, batch) values (4, '0000_00_00_000004_create_routes_table', 2);
