@@ -13,6 +13,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // Register repository implementations
+        $this->app->bind(\App\Contracts\RouteRepository::class, function () {
+            return new \App\Repositories\RouteRepositoryViaSql();
+        });
     }
 }
