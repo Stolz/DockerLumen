@@ -1,0 +1,47 @@
+{
+	"variables": [],
+	"info": {
+		"name": "DockerLumen",
+		"_postman_id": "8581da43-bcc5-9e5b-ef5d-22fa9f616f1b",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add route",
+			"request": {
+				"url": "http://lumen/route",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n\t[\"22.372080\", \"114.107876\"],\n\t[\"22.284418\", \"114.159509\"],\n\t[\"22.326441\", \"114.167810\"]\n]"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get route",
+			"request": {
+				"url": "http://lumen/route/eeb9aa5e-a01c-4346-ac42-1f3a47b8a229",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
