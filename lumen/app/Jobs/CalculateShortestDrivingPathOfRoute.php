@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Contracts\DrivingRouteService;
+use App\Contracts\RouteRepository;
 use App\Models\Route;
 
 class CalculateShortestDrivingPathOfRoute extends Job
@@ -27,36 +29,63 @@ class CalculateShortestDrivingPathOfRoute extends Job
     /**
      * Execute the job.
      *
-     * @param  \App\Contracts\RouteRepository $repository
+     * @param  \App\Contracts\RouteRepository $routeRepository
+     * @param  \App\Contracts\DrivingRouteService $routeService
      * @return void
      */
-    public function handle(\App\Contracts\RouteRepository $repository)
+    public function handle(RouteRepository $routeRepository, DrivingRouteService $drivingRouteService)
     {
         // Define a shorthand for better code legibility
         $route = $this->route;
 
         // Update route status
         $route->setStatus(Route::STATUS_PROCESSING);
-        $repository->update($route);
+        $routeRepository->update($route);
 
         try
         {
-            // TODO
-            if(true)
-                throw new \Exception('TODO');
+            // Calculated optimized route
+            $this->optimizeRouteUsingService($route, $drivingRouteService);
 
-            // Success
-            $route->setStatus(Route::STATUS_SUCCESSFUL);
-            $repository->update($route);
+            // Update route
+            $routeRepository->update($route);
         }
         catch(\Exception $exception)
         {
             // Update route error status
             $route->setStatus(Route::STATUS_FAILED)->setError($exception->getMessage());
-            $repository->update($route);
+            $routeRepository->update($route);
 
             // Rethrow exception for marking the job as failed
             throw $exception;
         }
+    }
+
+    /**
+     * Optimize a route using a route service.
+     *
+     * @param  \App\Models\Route $route
+     * @param  \App\Contracts\DrivingRouteService $routeService
+     * @return void
+     */
+    protected function optimizeRouteUsingService(Route $route, DrivingRouteService $drivingRouteService)
+    {
+        // Calculated optimized route
+        $path = $route->getPath();
+        $optimized = $drivingRouteService->optimizeForDistance($path);
+
+        // Rearrange path in the optimized order
+        $optimizedPath = [];
+        foreach($optimized['waypoints'] as $originalOrder)
+        {
+            $optimizedPath[] = $path[$originalOrder];
+        }
+
+        // Update route information
+        $route->setError(null)
+        ->setStatus(Route::STATUS_SUCCESSFUL)
+        ->setPath($optimizedPath)
+        ->setTotalDistance($optimized['cost']['distance'])
+        ->setTotalTime($optimized['cost']['duration']);
     }
 }

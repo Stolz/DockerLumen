@@ -4,6 +4,8 @@ Sample [Lumen](https://lumen.laravel.com/) Application running on Docker service
 
 Docker containers are based on [Alpine Linux](https://www.alpinelinux.org/about/) images which makes them smaller, more secure and more resource efficient.
 
+The application implements an API for optimizing driving routes using Google Maps API. The routes are processed in the background via Lumen queues.
+
 ## Requirementes
 
 You will need to install these programs:

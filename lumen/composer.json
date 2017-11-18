@@ -8,7 +8,11 @@
         "php": ">=5.6.4",
         "laravel/lumen-framework": "5.5.*",
         "vlucas/phpdotenv": "~2.2",
-        "webpatser/laravel-uuid": "^3.0"
+        "webpatser/laravel-uuid": "^3.0",
+        "egeloen/google-map": "^2.0",
+        "egeloen/serializer": "^1.0",
+        "php-http/guzzle6-adapter": "^1.1",
+        "php-http/message": "^1.6"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
