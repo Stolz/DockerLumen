@@ -12,7 +12,7 @@
 */
 
 // Home page. Show available endpoints
-$router->get('/', function () use ($router) {
+$router->get('/', function () use () {
 
     // URI for the database management panel
     $adminerUri = http_build_query([

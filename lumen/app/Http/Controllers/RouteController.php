@@ -43,13 +43,13 @@ class RouteController extends Controller
         }
         catch(\InvalidArgumentException $exception)
         {
-            return ['error' => $exception->getMessage()];
+            return response(['error' => $exception->getMessage()], 422);
         }
 
         // Save route into repository
         $saved = $this->repository->create($route);
         if( ! $saved)
-            return ['error' => 'Unable to save route into repository'];
+            return response(['error' => 'Unable to save route into repository'], 500);
 
         // Dispatch a background job to calculate shortest driving path
         $job = new CalculateShortestDrivingPathOfRoute($route);
@@ -70,7 +70,7 @@ class RouteController extends Controller
         // Get route from repository
         $route = $this->repository->findByToken($token);
         if( ! $route)
-            return ['error' => 'Route not found'];
+            return response(['error' => 'Route not found'], 404);
 
         // Generate response depending on route status ...
         $routeStatus = $route->getStatus();

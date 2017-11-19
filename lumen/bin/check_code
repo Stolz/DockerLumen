@@ -53,7 +53,7 @@ function linter
 function stan
 {
 	color "Running PHP Stan" cyan
-	./vendor/bin/phpstan analyse app config database resources routes
+	./vendor/bin/phpstan analyse app database routes
 	exit $?
 }
 
@@ -136,7 +136,7 @@ function detectmess
 	#If no ruleset is provide usa all
 	rulesets="${1:-cleancode,codesize,controversial,design,naming,unusedcode}"
 	color "Running PHP Mess Detector with rulesets: $rulesets" cyan
-	./vendor/bin/phpmd app,config,database,tests text $rulesets -suffixes .php
+	./vendor/bin/phpmd app,database,tests text $rulesets -suffixes .php
 	exit $?
 }
 
