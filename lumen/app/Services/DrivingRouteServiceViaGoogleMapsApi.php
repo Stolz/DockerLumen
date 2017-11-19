@@ -33,7 +33,7 @@ class DrivingRouteServiceViaGoogleMapsApi implements DrivingRouteService
      *
      * Inject the dependencies.
      *
-     * @param \Http\Client\HttpClient $httpClient
+     * @param \Http\Client\HttpClient      $httpClient
      * @param \Http\Message\MessageFactory $messageFactory
      *
      * @return void
@@ -50,7 +50,8 @@ class DrivingRouteServiceViaGoogleMapsApi implements DrivingRouteService
      *
      * Total time and distance of the optimized route is also returned.
      *
-     * @param  array $locations
+     * @param array $locations
+     *
      * @return array
      */
     public function optimizeForDistance(array $locations): array
@@ -67,8 +68,7 @@ class DrivingRouteServiceViaGoogleMapsApi implements DrivingRouteService
 
         // Calculate cost of driving each permutation starting at the first location
         $routes = [];
-        foreach($this->permutations($permutations) as $waypoints)
-        {
+        foreach ($this->permutations($permutations) as $waypoints) {
             // Add back starting point to the list of waypoints
             array_unshift($waypoints, $start);
 
@@ -88,10 +88,12 @@ class DrivingRouteServiceViaGoogleMapsApi implements DrivingRouteService
      * Calculate all distances and times between multiple locations.
      *
      * @param array $locations
+     *
      * @return array
+     *
      * @throws \RuntimeException
      */
-    protected function calculateMatrix(array $locations) : array
+    protected function calculateMatrix(array $locations): array
     {
         // Save key of starting point
         reset($locations);
@@ -107,21 +109,22 @@ class DrivingRouteServiceViaGoogleMapsApi implements DrivingRouteService
 
         // Validate response
         $status = (string) $response->getStatus();
-        if($status !== 'OK')
+        if ($status !== 'OK') {
             throw new \RuntimeException("DistanceMatrixService: $status");
+        }
 
         // Build matrix of distance and duration
         $matrix = [];
-        foreach($response->getRows() as $origin => $row)
-        {
-            foreach($row->getElements() as $destination => $element)
-            {
+        foreach ($response->getRows() as $origin => $row) {
+            foreach ($row->getElements() as $destination => $element) {
                 // Ignore nonsense cases
-                if($origin === $destination or $destination === $start)
+                if ($origin === $destination or $destination === $start) {
                     continue;
+                }
 
-                if($element->getStatus() !== 'OK')
+                if ($element->getStatus() !== 'OK') {
                     throw new \RuntimeException("DistanceMatrixService location: $status");
+                }
 
                 $matrix[$origin][$destination] = [
                     'distance' => $element->getDistance()->getValue(),
@@ -138,6 +141,7 @@ class DrivingRouteServiceViaGoogleMapsApi implements DrivingRouteService
      *
      * @param array $waypoints
      * @param array $matrix
+     *
      * @return array
      */
     public function calculateRouteCost(array $waypoints, array $matrix): array
@@ -146,8 +150,7 @@ class DrivingRouteServiceViaGoogleMapsApi implements DrivingRouteService
         $duration = 0;
         $from = array_shift($waypoints);
 
-        foreach($waypoints as $to)
-        {
+        foreach ($waypoints as $to) {
             $distance += $matrix[$from][$to]['distance'];
             $duration += $matrix[$from][$to]['duration'];
             $from = $to;
@@ -159,14 +162,16 @@ class DrivingRouteServiceViaGoogleMapsApi implements DrivingRouteService
     /**
      * Create a location instance from its coordinate or name representation.
      *
-     * @param  mixed $location
+     * @param mixed $location
+     *
      * @return \Ivory\GoogleMap\Service\Base\Location\LocationInterface
      */
     protected function makeLocation($location): LocationInterface
     {
         // Coordinate
-        if(is_array($location))
+        if (is_array($location)) {
             return new CoordinateLocation(new Coordinate($location[0], $location[1]));
+        }
 
         // Regular location
         return new AddressLocation((string) $location);
@@ -175,7 +180,8 @@ class DrivingRouteServiceViaGoogleMapsApi implements DrivingRouteService
     /**
      * Create multiple location instances from their coordinate or name representation.
      *
-     * @param  array $locations
+     * @param array $locations
+     *
      * @return array
      */
     protected function makeMultipleLocations(array $locations): array
@@ -188,21 +194,17 @@ class DrivingRouteServiceViaGoogleMapsApi implements DrivingRouteService
     /**
      * Helper function to generate all possible permutations of an array.
      *
-     * @param  array $elements
+     * @param array $elements
+     *
      * @return Generator
      */
     protected function permutations(array $elements)
     {
-        if (count($elements) <= 1)
-        {
+        if (count($elements) <= 1) {
             yield $elements;
-        }
-        else
-        {
-            foreach ($this->permutations(array_slice($elements, 1)) as $permutation)
-            {
-                foreach (range(0, count($elements) - 1) as $i)
-                {
+        } else {
+            foreach ($this->permutations(array_slice($elements, 1)) as $permutation) {
+                foreach (range(0, count($elements) - 1) as $i) {
                     yield array_merge(array_slice($permutation, 0, $i), [$elements[0]], array_slice($permutation, $i));
                 }
             }

@@ -9,7 +9,8 @@ interface RouteRepository
     /**
      * Save a new route into the repository.
      *
-     * @param  \App\Models\Route $route
+     * @param \App\Models\Route $route
+     *
      * @return bool
      */
     public function create(Route $route): bool;
@@ -17,7 +18,8 @@ interface RouteRepository
     /**
      * Update an existing route in the repository.
      *
-     * @param  \App\Models\Route $route
+     * @param \App\Models\Route $route
+     *
      * @return bool
      */
     public function update(Route $route): bool;
@@ -25,7 +27,8 @@ interface RouteRepository
     /**
      * Retrieve a route by its token.
      *
-     * @param  string $token
+     * @param string $token
+     *
      * @return \App\Models\Route|null
      */
     public function findByToken(string $token);

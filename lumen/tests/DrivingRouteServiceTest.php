@@ -28,6 +28,7 @@ class DrivingRouteServiceTest extends TestCase
      * Test optimize driving route for distance.
      *
      * @expectedException \RuntimeException
+     *
      * @return void
      */
     public function testOptimizeRouteForDistance()
@@ -44,7 +45,7 @@ class DrivingRouteServiceTest extends TestCase
             'cost' => [
                 'distance' => 1214244,
                 'duration' => 44115,
-            ]
+            ],
         ];
         $actual = $this->service->optimizeForDistance($this->locations);
         $this->assertEquals($expected, $actual);

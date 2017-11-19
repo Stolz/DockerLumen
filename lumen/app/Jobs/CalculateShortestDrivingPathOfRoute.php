@@ -18,7 +18,8 @@ class CalculateShortestDrivingPathOfRoute extends Job
     /**
      * Create a new job instance.
      *
-     * @param  \App\Models\Route $route
+     * @param \App\Models\Route $route
+     *
      * @return void
      */
     public function __construct(Route $route)
@@ -29,8 +30,9 @@ class CalculateShortestDrivingPathOfRoute extends Job
     /**
      * Execute the job.
      *
-     * @param  \App\Contracts\RouteRepository $routeRepository
-     * @param  \App\Contracts\DrivingRouteService $routeService
+     * @param \App\Contracts\RouteRepository     $routeRepository
+     * @param \App\Contracts\DrivingRouteService $routeService
+     *
      * @return void
      */
     public function handle(RouteRepository $routeRepository, DrivingRouteService $drivingRouteService)
@@ -42,16 +44,13 @@ class CalculateShortestDrivingPathOfRoute extends Job
         $route->setStatus(Route::STATUS_PROCESSING);
         $routeRepository->update($route);
 
-        try
-        {
+        try {
             // Calculated optimized route
             $this->optimizeRouteUsingService($route, $drivingRouteService);
 
             // Update route
             $routeRepository->update($route);
-        }
-        catch(\Exception $exception)
-        {
+        } catch (\Exception $exception) {
             // Update route error status
             $route->setStatus(Route::STATUS_FAILED)->setError($exception->getMessage());
             $routeRepository->update($route);
@@ -64,8 +63,9 @@ class CalculateShortestDrivingPathOfRoute extends Job
     /**
      * Optimize a route using a route service.
      *
-     * @param  \App\Models\Route $route
-     * @param  \App\Contracts\DrivingRouteService $routeService
+     * @param \App\Models\Route                  $route
+     * @param \App\Contracts\DrivingRouteService $routeService
+     *
      * @return void
      */
     protected function optimizeRouteUsingService(Route $route, DrivingRouteService $drivingRouteService)
@@ -76,8 +76,7 @@ class CalculateShortestDrivingPathOfRoute extends Job
 
         // Rearrange path in the optimized order
         $optimizedPath = [];
-        foreach($optimized['waypoints'] as $originalOrder)
-        {
+        foreach ($optimized['waypoints'] as $originalOrder) {
             $optimizedPath[] = $path[$originalOrder];
         }
 

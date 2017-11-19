@@ -6,6 +6,7 @@ class Route extends Model
 {
     /**
      * Possible status of the route.
+     *
      * @const string
      */
     const STATUS_UNPROCESSED = 'pending';
@@ -59,7 +60,8 @@ class Route extends Model
     /**
      * Set the token of the route.
      *
-     * @param  string $token
+     * @param string $token
+     *
      * @return self
      */
     public function setToken(string $token): self
@@ -74,8 +76,10 @@ class Route extends Model
     /**
      * Set the status of the route.
      *
-     * @param  string $status
+     * @param string $status
+     *
      * @return self
+     *
      * @throws \InvalidArgumentException
      */
     public function setStatus(string $status): self
@@ -90,8 +94,9 @@ class Route extends Model
             static::STATUS_SUCCESSFUL,
             static::STATUS_FAILED,
         ];
-        if( ! in_array($status, $validStatus, true))
+        if (! in_array($status, $validStatus, true)) {
             throw new \InvalidArgumentException('Invalid status');
+        }
 
         // Set status
         $this->status = $status;
@@ -103,15 +108,18 @@ class Route extends Model
     /**
      * Set the path of the route.
      *
-     * @param  array $path
+     * @param array $path
+     *
      * @return self
+     *
      * @throws \InvalidArgumentException
      */
     public function setPath(array $path): self
     {
         // Validate path
-        if(count($path) < 2)
+        if (count($path) < 2) {
             throw new \InvalidArgumentException('Invalid path');
+        }
 
         // Set path
         $this->path = $path;
@@ -123,7 +131,8 @@ class Route extends Model
     /**
      * Set the total distance of the route.
      *
-     * @param  int $distance
+     * @param int $distance
+     *
      * @return self
      */
     public function setTotalDistance(int $distance): self
@@ -138,7 +147,8 @@ class Route extends Model
     /**
      * Set the total time of the route.
      *
-     * @param  int $time
+     * @param int $time
+     *
      * @return self
      */
     public function setTotalTime(int $time): self
@@ -153,7 +163,8 @@ class Route extends Model
     /**
      * Set the last error of the route.
      *
-     * @param  string|null $error
+     * @param string|null $error
+     *
      * @return self
      */
     public function setError($error): self

@@ -4,7 +4,7 @@ source "$( cd "$( dirname "$0" )" && pwd )/common" || exit 1
 go_to_laravel_dir
 
 ./vendor/bin/php-cs-fixer fix "$@" #  --fixers=-braces,-phpdoc_no_empty_return,-phpdoc_params,-phpdoc_separation,logical_not_operators_with_spaces,-concat_without_spaces,return
-./vendor/bin/phpcbf --standard=PSR2 -d testVersion 7.0 "$@"
+./vendor/bin/phpcbf --standard=PSR2 -d testVersion=7.0 "$@"
 
 exit 0
 

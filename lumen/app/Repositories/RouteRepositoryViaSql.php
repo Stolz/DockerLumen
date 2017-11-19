@@ -21,7 +21,8 @@ class RouteRepositoryViaSql implements RouteRepository
     /**
      * Save a new route into the repository.
      *
-     * @param  \App\Models\Route $route
+     * @param \App\Models\Route $route
+     *
      * @return bool
      */
     public function create(Route $route): bool
@@ -30,8 +31,9 @@ class RouteRepositoryViaSql implements RouteRepository
         $columns['token'] = Uuid::generate(4);
         $columns['path'] = json_encode($columns['path']);
 
-        if( ! $this->query()->insert($columns))
+        if (! $this->query()->insert($columns)) {
             return false;
+        }
 
         $route->setToken($columns['token']);
 
@@ -41,7 +43,8 @@ class RouteRepositoryViaSql implements RouteRepository
     /**
      * Update an existing route in the repository.
      *
-     * @param  \App\Models\Route $route
+     * @param \App\Models\Route $route
+     *
      * @return bool
      */
     public function update(Route $route): bool
@@ -55,14 +58,16 @@ class RouteRepositoryViaSql implements RouteRepository
     /**
      * Retrieve a route by its token.
      *
-     * @param  string $token
+     * @param string $token
+     *
      * @return \App\Models\Route|null
      */
     public function findByToken(string $token)
     {
         $found = $this->query()->whereToken($token)->first();
-        if( ! $found)
+        if (! $found) {
             return null;
+        }
 
         // Set non nullable columns
         $route = with(new Route)
@@ -71,12 +76,15 @@ class RouteRepositoryViaSql implements RouteRepository
         ->setPath(json_decode($found->path));
 
         // Set nullable columns
-        if( ! is_null($found->{'total_distance'}))
+        if (! is_null($found->{'total_distance'})) {
             $route->setTotalDistance($found->{'total_distance'});
-        if( ! is_null($found->{'total_time'}))
+        }
+        if (! is_null($found->{'total_time'})) {
             $route->setTotalTime($found->{'total_time'});
-        if( ! is_null($found->error))
+        }
+        if (! is_null($found->error)) {
             $route->setError($found->error);
+        }
 
         return $route;
     }

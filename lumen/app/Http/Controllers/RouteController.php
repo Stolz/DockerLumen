@@ -19,7 +19,8 @@ class RouteController extends Controller
      *
      * Inject the dependencies.
      *
-     * @param  \App\Contracts\RouteRepository $repository
+     * @param \App\Contracts\RouteRepository $repository
+     *
      * @return void
      */
     public function __construct(\App\Contracts\RouteRepository $repository)
@@ -30,26 +31,25 @@ class RouteController extends Controller
     /**
      * Add a route to the repository and dispatch a background job to process it.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function addRoute(\Illuminate\Http\Request $request)
     {
         // Create route
-        try
-        {
+        try {
             $path = (array) $request->input();
             $route = with(new Route)->setPath($path);
-        }
-        catch(\InvalidArgumentException $exception)
-        {
+        } catch (\InvalidArgumentException $exception) {
             return response(['error' => $exception->getMessage()], 422);
         }
 
         // Save route into repository
         $saved = $this->repository->create($route);
-        if( ! $saved)
+        if (! $saved) {
             return response(['error' => 'Unable to save route into repository'], 500);
+        }
 
         // Dispatch a background job to calculate shortest driving path
         $job = new CalculateShortestDrivingPathOfRoute($route);
@@ -62,26 +62,30 @@ class RouteController extends Controller
     /**
      * Retrieve a route from the repository by its token.
      *
-     * @param  string $token
+     * @param string $token
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function getRoute(string $token)
     {
         // Get route from repository
         $route = $this->repository->findByToken($token);
-        if( ! $route)
+        if (! $route) {
             return response(['error' => 'Route not found'], 404);
+        }
 
         // Generate response depending on route status ...
         $routeStatus = $route->getStatus();
 
         // ... route has been succefully processed
-        if($routeStatus === Route::STATUS_SUCCESSFUL)
+        if ($routeStatus === Route::STATUS_SUCCESSFUL) {
             return array_except($route->toArray(), ['token', 'error']);
+        }
 
         // ... route calculation has failed
-        if($routeStatus === Route::STATUS_FAILED)
+        if ($routeStatus === Route::STATUS_FAILED) {
             return array_only($route->toArray(), ['status', 'error']);
+        }
 
         // ... route has not been processed yet
         return ['status' => $routeStatus];

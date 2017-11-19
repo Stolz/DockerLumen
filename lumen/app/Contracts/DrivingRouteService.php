@@ -10,7 +10,8 @@ interface DrivingRouteService
      *
      * Total time and distance of the optimized route is also returned.
      *
-     * @param  array $locations
+     * @param array $locations
+     *
      * @return array
      */
     public function optimizeForDistance(array $locations): array;
