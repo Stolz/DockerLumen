@@ -1,6 +1,6 @@
 /storage/app
 /storage/framework
 /storage/logs
+/storage/sami
 /vendor
-Homestead.json
-Homestead.yaml
+

@@ -6,21 +6,22 @@
     "type": "project",
     "require": {
         "php": ">=5.6.4",
-        "laravel/lumen-framework": "5.5.*",
-        "vlucas/phpdotenv": "~2.2",
-        "webpatser/laravel-uuid": "^3.0",
         "egeloen/google-map": "^2.0",
         "egeloen/serializer": "^1.0",
+        "laravel/lumen-framework": "5.5.*",
         "php-http/guzzle6-adapter": "^1.1",
-        "php-http/message": "^1.6"
+        "php-http/message": "^1.6",
+        "vlucas/phpdotenv": "~2.2",
+        "webpatser/laravel-uuid": "^3.0"
     },
     "require-dev": {
-        "fzaninotto/faker": "~1.4",
-        "phpunit/phpunit": "~6.0",
-        "mockery/mockery": "~0.9",
         "friendsofphp/php-cs-fixer": "^2.8",
+        "fzaninotto/faker": "~1.4",
+        "laravel/tinker": "^1.0",
+        "mockery/mockery": "~0.9",
         "phpmd/phpmd": "^2.6",
         "phpstan/phpstan": "^0.8.5",
+        "phpunit/phpunit": "~6.0",
         "squizlabs/php_codesniffer": "^3.1"
     },
     "autoload": {
@@ -34,12 +35,11 @@
             "database/"
         ]
     },
-    "scripts": {
-        "post-root-package-install": [
-            "php -r \"copy('.env.example', '.env');\""
-        ]
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "optimize-autoloader": true
+    "prefer-stable": true
 }

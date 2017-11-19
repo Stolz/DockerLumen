@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Generate application code documentation
+
+source "$( cd "$( dirname "$0" )" && pwd )/common" || exit 1
+go_to_laravel_dir
+
+SAMIPHAR=./vendor/bin/sami
+
+# Install Sami if it's not installed
+if [ ! -f $SAMIPHAR ]; then
+    color "Installing sami.phar ..."
+    wget http://get.sensiolabs.org/sami.phar -nv -O $SAMIPHAR || exit_error "Unable to install Sami.phar"
+fi
+
+color "At the moment of Writing this SAMI does not support PHP anonymous classes. If you get the error " purple
+color "'Undefined property: PhpParser\Node\Stmt\Class_::\$namespacedName'" cyan
+color "please temporarily comment out all the anonymous classes in the source code and try again" purple
+
+
+color "Generating source code documentation"
+php ./vendor/bin/sami update sami.php
+
+open_in_browser ./doc/app/index.html
