@@ -11,6 +11,8 @@ use Ivory\GoogleMap\Service\Base\TravelMode;
 use Ivory\GoogleMap\Service\Base\UnitSystem;
 use Ivory\GoogleMap\Service\DistanceMatrix\DistanceMatrixService;
 use Ivory\GoogleMap\Service\DistanceMatrix\Request\DistanceMatrixRequest;
+use Ivory\GoogleMap\Service\DistanceMatrix\Response\DistanceMatrixElementStatus;
+use Ivory\GoogleMap\Service\DistanceMatrix\Response\DistanceMatrixStatus;
 
 class DrivingRouteServiceViaGoogleMapsApi implements DrivingRouteService
 {
@@ -109,8 +111,8 @@ class DrivingRouteServiceViaGoogleMapsApi implements DrivingRouteService
 
         // Validate response
         $status = (string) $response->getStatus();
-        if ($status !== 'OK') {
-            throw new \RuntimeException("DistanceMatrixService: $status");
+        if ($status !== DistanceMatrixStatus::OK) {
+            throw new \RuntimeException("$status: See https://developers.google.com/maps/documentation/javascript/reference?csw=1#DistanceMatrixStatus");
         }
 
         // Build matrix of distance and duration
@@ -122,8 +124,9 @@ class DrivingRouteServiceViaGoogleMapsApi implements DrivingRouteService
                     continue;
                 }
 
-                if ($element->getStatus() !== 'OK') {
-                    throw new \RuntimeException("DistanceMatrixService location: $status");
+                $status = (string) $element->getStatus();
+                if ($status !== DistanceMatrixElementStatus::OK) {
+                    throw new \RuntimeException("$status: See https://developers.google.com/maps/documentation/javascript/reference?csw=1#DistanceMatrixElementStatus");
                 }
 
                 $matrix[$origin][$destination] = [
